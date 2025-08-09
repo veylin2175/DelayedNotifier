@@ -1,0 +1,22 @@
+env: "local"
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "your_password"
+  dbname: "notifier"
+  sslmode: "disable"
+
+http_server:
+  address: "localhost:8099"
+  timeout: 4s
+  idle_timeout: 60s
+
+redis:
+  address: "localhost:6379"
+
+rabbit:
+  url: "amqp://guest:guest@localhost:5672/"
+
+tg_token: "your_telegram_token"
