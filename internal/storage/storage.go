@@ -3,6 +3,6 @@ package storage
 import "errors"
 
 var (
-	ErrNoteNotFound = errors.New("notification not found")
-	ErrNoteExists   = errors.New("notification already exists")
+	ErrNotifyNotFound = errors.New("notification not found")
+	ErrNotifyExists   = errors.New("notification already exists")
 )

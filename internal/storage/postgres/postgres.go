@@ -107,7 +107,7 @@ func (s *Storage) GetNotificationStatus(notificationID int64) (string, error) {
 	return status, nil
 }
 
-func (s *Storage) DeleteNotificationStatus(notificationID int64) error {
+func (s *Storage) DeleteNotification(notificationID int64) error {
 	_, err := s.db.Exec(
 		`DELETE FROM notifications WHERE id = $1`,
 		notificationID)

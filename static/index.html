@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Notifier UI</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<h1>Delayed Notifier</h1>
+
+<div class="container">
+    <div class="card">
+        <h2>Создать уведомление</h2>
+        <form id="createForm">
+            <label for="recipientID">Telegram ID:</label>
+            <input type="text" id="recipientID" name="recipientID" required>
+
+            <label for="date">Дата и время (YYYY-MM-DD HH:MM:SS):</label>
+            <input type="text" id="date" name="date" required>
+
+            <label for="text">Текст сообщения:</label>
+            <textarea id="text" name="text" required></textarea>
+
+            <button type="submit">Создать</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Получить статус</h2>
+        <form id="getStatusForm">
+            <label for="statusID">ID уведомления:</label>
+            <input type="text" id="statusID" name="statusID" required>
+
+            <button type="submit">Получить статус</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Удалить уведомление</h2>
+        <form id="deleteForm">
+            <label for="deleteID">ID уведомления:</label>
+            <input type="text" id="deleteID" name="deleteID" required>
+
+            <button type="submit">Удалить</button>
+        </form>
+    </div>
+</div>
+
+<div class="results">
+    <h2>Результаты</h2>
+    <pre id="responseOutput"></pre>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

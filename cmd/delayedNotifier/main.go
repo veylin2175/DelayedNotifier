@@ -2,10 +2,17 @@ package main
 
 import (
 	"DelayedNotifier/internal/config"
+	"DelayedNotifier/internal/http-server/handlers/notify/createNotify"
+	"DelayedNotifier/internal/http-server/handlers/notify/deleteNotify"
+	"DelayedNotifier/internal/http-server/handlers/notify/getStatus"
+	"DelayedNotifier/internal/http-server/middleware/mwlogger"
 	"DelayedNotifier/internal/lib/logger/handlers/slogpretty"
 	"DelayedNotifier/internal/lib/logger/sl"
 	"DelayedNotifier/internal/storage/postgres"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,6 +36,39 @@ func main() {
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)
+	}
+
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(mwlogger.New(log))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
+
+	fileServer := http.FileServer(http.Dir("./static"))
+
+	router.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./static/index.html")
+	})
+
+	router.Post("/notify", createNotify.New(log, storage))
+	router.Get("/notify/{id}", getStatus.New(log, storage))
+	router.Delete("/notify/{id}", deleteNotify.New(log, storage))
+
+	log.Info("starting server", slog.String("address", cfg.HTTPServer.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.HTTPServer.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err = srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server", sl.Err(err))
 	}
 
 	stop := make(chan os.Signal, 1)
