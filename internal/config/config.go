@@ -43,7 +43,11 @@ type Redis struct {
 }
 
 type Rabbit struct {
-	URL string `yaml:"url" env-default:"amqp://guest:guest@localhost:5672/"`
+	Host      string `yaml:"host" env-default:"localhost"`
+	Port      int    `yaml:"port" env-default:"5672"`
+	User      string `yaml:"user" env-default:"guest"`
+	Password  string `yaml:"password" env-default:"guest"`
+	QueueName string `yaml:"queue_name" env-default:"notifications_queue"`
 }
 
 func MustLoad() *Config {

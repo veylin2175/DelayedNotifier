@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"DelayedNotifier/internal/config"
+	"DelayedNotifier/internal/models"
+	"DelayedNotifier/internal/storage"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -61,15 +63,22 @@ func InitDB(cfg *config.Config) (*Storage, error) {
 }
 
 func (s *Storage) CreateNotification(recipientID int64, dateStr, text string) (int64, error) {
-	date, err := time.Parse("2006-01-02 15:04:05", dateStr)
+	serverLocation, err := time.LoadLocation("Local")
+	if err != nil {
+		return 0, fmt.Errorf("failed to load server location: %w", err)
+	}
+
+	date, err := time.ParseInLocation("2006-01-02 15:04:05", dateStr, serverLocation)
 	if err != nil {
 		return 0, fmt.Errorf("invalid date format: %v", err)
 	}
 
+	dateUTC := date.UTC()
+
 	var notificationId int64
 	err = s.db.QueryRow(
 		`INSERT INTO notifications (recipient_id, date, text) VALUES ($1, $2, $3) RETURNING id`,
-		recipientID, date, text,
+		recipientID, dateUTC, text,
 	).Scan(&notificationId)
 
 	if err != nil {
@@ -105,6 +114,30 @@ func (s *Storage) GetNotificationStatus(notificationID int64) (string, error) {
 	}
 
 	return status, nil
+}
+
+func (s *Storage) GetNotificationByID(notificationID int64) (*models.Notification, error) {
+	var notification models.Notification
+
+	err := s.db.QueryRow(
+		`SELECT id, recipient_id, date, text, status FROM notifications WHERE id = $1`,
+		notificationID,
+	).Scan(
+		&notification.ID,
+		&notification.RecipientID,
+		&notification.Date,
+		&notification.Text,
+		&notification.Status,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, storage.ErrNotifyNotFound
+		}
+		return nil, fmt.Errorf("failed to get notification by ID: %w", err)
+	}
+
+	return &notification, nil
 }
 
 func (s *Storage) DeleteNotification(notificationID int64) error {
