@@ -166,7 +166,6 @@ go run cmd/delayedNotifier/main.go
 │   └── delayedNotifier/
 │       └── main.go       # Точка входа в приложение
 ├── config/
-│   ├── config.go         # Структуры для конфигурации
 │   └── local.yml         # Файл с настройками
 ├── internal/
 │   ├── config/           # Парсинг конфигов
