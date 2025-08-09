@@ -32,7 +32,14 @@ type HTTPServer struct {
 }
 
 type Redis struct {
-	Address string `yaml:"address" env-default:"localhost:6379"`
+	Addr         string        `yaml:"addr" env-default:"localhost:6379"`
+	Password     string        `yaml:"password" env-default:""`
+	DB           int           `yaml:"db" env-default:"0"`
+	DialTimeout  time.Duration `yaml:"dial_timeout" env-default:"5s"`
+	ReadTimeout  time.Duration `yaml:"read_timeout" env-default:"3s"`
+	WriteTimeout time.Duration `yaml:"write_timeout" env-default:"3s"`
+	PoolSize     int           `yaml:"pool_size" env-default:"10"`
+	PoolTimeout  time.Duration `yaml:"pool_timeout" env-default:"30s"`
 }
 
 type Rabbit struct {
