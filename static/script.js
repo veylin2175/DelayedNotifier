@@ -5,7 +5,6 @@ const getStatusForm = document.getElementById('getStatusForm');
 const deleteForm = document.getElementById('deleteForm');
 const responseOutput = document.getElementById('responseOutput');
 
-// Хелпер-функция для отправки запросов
 async function sendRequest(url, method, body = null) {
     const options = {
         method: method,
@@ -26,7 +25,6 @@ async function sendRequest(url, method, body = null) {
     }
 }
 
-// Обработчик для создания уведомления
 createForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const recipientID = parseInt(document.getElementById('recipientID').value, 10);
@@ -37,14 +35,12 @@ createForm.addEventListener('submit', (e) => {
     sendRequest(API_URL, 'POST', body);
 });
 
-// Обработчик для получения статуса
 getStatusForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const notificationID = document.getElementById('statusID').value;
     sendRequest(`${API_URL}/${notificationID}`, 'GET');
 });
 
-// Обработчик для удаления уведомления
 deleteForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const notificationID = document.getElementById('deleteID').value;
